@@ -32,6 +32,9 @@ export function RoomsAvailabilitySection() {
   const router = useRouter();
   const shouldReduceMotion = useReducedMotion();
 
+  // Active highlighted room index (0-3) for synchronized metadata
+  const [activeRoomIndex, setActiveRoomIndex] = useState(0);
+
   // Room cards carousel index
   const [startIndex, setStartIndex] = useState(0);
 
@@ -59,6 +62,8 @@ export function RoomsAvailabilitySection() {
     setCheckOut(addDays(now, 3));
   }, []);
 
+  const activeRoom = ROOM_CATEGORIES[activeRoomIndex] || ROOM_CATEGORIES[0];
+
   const visibleRooms = useMemo(() => {
     const list = [];
     for (let i = 0; i < 3; i++) {
@@ -71,10 +76,14 @@ export function RoomsAvailabilitySection() {
     setStartIndex((prev) =>
       prev === 0 ? ROOM_CATEGORIES.length - 1 : prev - 1
     );
+    setActiveRoomIndex((prev) =>
+      prev === 0 ? ROOM_CATEGORIES.length - 1 : prev - 1
+    );
   };
 
   const handleNextRooms = () => {
     setStartIndex((prev) => (prev + 1) % ROOM_CATEGORIES.length);
+    setActiveRoomIndex((prev) => (prev + 1) % ROOM_CATEGORIES.length);
   };
 
   const handlePrevMonth = () => {
@@ -140,53 +149,133 @@ export function RoomsAvailabilitySection() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-9 xl:gap-12 items-start">
         {/* Left Column (~65% / 7-8 cols): 3 Room Cards + Editorial Headline & Controls */}
         <div className="lg:col-span-7 xl:col-span-8 flex flex-col min-w-0">
-          {/* 3 Rounded Room Cards Row with Animated Entrance & Hover Microinteractions */}
+          {/* 3 Rounded Room Cards Row with Synchronized Active State & Hover Microinteractions */}
           <RevealOnScroll yOffset={24}>
             <div className="flex sm:grid sm:grid-cols-3 gap-3 sm:gap-4 overflow-x-auto sm:overflow-visible snap-x snap-mandatory pb-1 sm:pb-0 -mx-5 px-5 sm:mx-0 sm:px-0">
-              {visibleRooms.map((room, idx) => (
-                <Link
-                  key={`${room.id}-${idx}`}
-                  href={`/rooms/${room.slug}`}
-                  className="group relative w-[235px] sm:w-auto snap-start h-[180px] sm:h-[190px] lg:h-[202px] xl:h-[224px] rounded-[18px] overflow-hidden bg-[#171715] block shrink-0 focus:outline-none focus:ring-2 focus:ring-[#171715] transition-all duration-300 hover:-translate-y-1"
-                >
-                  <img
-                    src={room.image}
-                    alt={`${room.name} at City Boutique Hotel Sarajevo`}
-                    loading="lazy"
-                    width={400}
-                    height={260}
-                    className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-106"
-                  />
-                  {/* Subtle Dark Gradient Overlay */}
+              {visibleRooms.map((room, idx) => {
+                const isActive = room.id === activeRoom.id;
+                return (
                   <div
-                    className="absolute inset-0 transition-opacity duration-300 group-hover:opacity-90"
-                    style={{
-                      background:
-                        "linear-gradient(180deg, rgba(17,21,18,0.22) 0%, rgba(17,21,18,0.06) 45%, rgba(17,21,18,0.78) 100%)",
+                    key={`${room.id}-${idx}`}
+                    onClick={() => {
+                      const matchedIdx = ROOM_CATEGORIES.findIndex(
+                        (r) => r.id === room.id
+                      );
+                      if (matchedIdx !== -1) setActiveRoomIndex(matchedIdx);
                     }}
-                  />
+                    onMouseEnter={() => {
+                      const matchedIdx = ROOM_CATEGORIES.findIndex(
+                        (r) => r.id === room.id
+                      );
+                      if (matchedIdx !== -1) setActiveRoomIndex(matchedIdx);
+                    }}
+                    className={cn(
+                      "group relative w-[235px] sm:w-auto snap-start h-[180px] sm:h-[190px] lg:h-[202px] xl:h-[224px] rounded-[18px] overflow-hidden bg-[#171715] block shrink-0 cursor-pointer transition-all duration-500",
+                      isActive
+                        ? "ring-2 ring-white/90 shadow-[0_12px_28px_rgba(0,0,0,0.35)] -translate-y-1 scale-[1.01]"
+                        : "opacity-85 hover:opacity-100 hover:-translate-y-0.5"
+                    )}
+                  >
+                    <Link
+                      href={`/rooms/${room.slug}`}
+                      className="absolute inset-0 z-20 focus:outline-none"
+                      aria-label={`View details for ${room.name}`}
+                    />
+                    <img
+                      src={room.image}
+                      alt={`${room.name} at City Boutique Hotel Sarajevo`}
+                      loading="lazy"
+                      width={400}
+                      height={260}
+                      className={cn(
+                        "w-full h-full object-cover transition-transform duration-700 ease-out",
+                        isActive ? "scale-106" : "group-hover:scale-104"
+                      )}
+                    />
+                    {/* Subtle Dark Gradient Overlay */}
+                    <div
+                      className="absolute inset-0 transition-opacity duration-300"
+                      style={{
+                        background:
+                          "linear-gradient(180deg, rgba(17,21,18,0.22) 0%, rgba(17,21,18,0.06) 45%, rgba(17,21,18,0.78) 100%)",
+                      }}
+                    />
 
-                  {/* Top-Left Frosted "Details" Pill Badge with Smooth Hover Shift */}
-                  <span className="absolute top-3 left-3 px-3 py-0.5 rounded-full bg-white/15 backdrop-blur-md border border-white/35 text-[11px] font-normal text-white tracking-[-0.01em] transition-all duration-300 group-hover:bg-white group-hover:text-[#171715] group-hover:scale-105">
-                    Details
-                  </span>
-
-                  {/* Bottom-Left Room Category Name */}
-                  <div className="absolute bottom-3 left-3.5 right-3.5 flex items-baseline justify-between gap-2">
-                    <h3 className="text-[16px] sm:text-[17px] font-normal text-white tracking-[-0.02em] leading-snug transition-transform duration-300 group-hover:translate-x-0.5">
-                      {room.shortName}
-                    </h3>
-                    <span className="text-[10px] text-white/75 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                      {room.size}
+                    {/* Top-Left Frosted "Details" Pill Badge / Active Status */}
+                    <span
+                      className={cn(
+                        "absolute top-3 left-3 px-3 py-0.5 rounded-full text-[11px] font-normal tracking-[-0.01em] transition-all duration-300 z-10",
+                        isActive
+                          ? "bg-white text-[#171715] font-medium shadow-sm scale-105"
+                          : "bg-white/15 backdrop-blur-md border border-white/35 text-white group-hover:bg-white group-hover:text-[#171715]"
+                      )}
+                    >
+                      {isActive ? "Selected" : "Details"}
                     </span>
+
+                    {/* Top-Right Room Index Pill */}
+                    <span className="absolute top-3 right-3 text-[10px] font-mono text-white/70 px-2 py-0.5 rounded-full bg-black/30 backdrop-blur-sm z-10">
+                      0{((startIndex + idx) % ROOM_CATEGORIES.length) + 1}
+                    </span>
+
+                    {/* Bottom-Left Room Category Name */}
+                    <div className="absolute bottom-3 left-3.5 right-3.5 flex items-baseline justify-between gap-2 z-10">
+                      <h3 className="text-[16px] sm:text-[17px] font-normal text-white tracking-[-0.02em] leading-snug transition-transform duration-300 group-hover:translate-x-0.5">
+                        {room.shortName}
+                      </h3>
+                      <span className="text-[10px] text-white/80 transition-opacity duration-300">
+                        {room.size}
+                      </span>
+                    </div>
                   </div>
-                </Link>
-              ))}
+                );
+              })}
             </div>
           </RevealOnScroll>
 
+          {/* Synchronized Room Metadata Strip with Animated Masked Transition */}
+          <div className="mt-4 pt-1 flex flex-wrap items-center justify-between gap-3 border-b border-[#E7E7E3]/60 pb-3">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={activeRoom.id}
+                initial={shouldReduceMotion ? false : { opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.35, ease: MOTION_EASE.editorial }}
+                className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs text-[#777773]"
+              >
+                <span className="font-medium text-[#171715]">
+                  {activeRoom.name}
+                </span>
+                <span className="w-1 h-1 rounded-full bg-[#171715]/30" />
+                <span>{activeRoom.size}</span>
+                <span className="w-1 h-1 rounded-full bg-[#171715]/30" />
+                <span>{activeRoom.capacity}</span>
+                <span className="w-1 h-1 rounded-full bg-[#171715]/30 hidden sm:inline" />
+                <span className="hidden sm:inline">{activeRoom.bedConfiguration}</span>
+              </motion.div>
+            </AnimatePresence>
+
+            {/* Room Progress Indicator: 01 / 04 with Animated Progress Line */}
+            <div className="flex items-center gap-2.5 shrink-0 ml-auto">
+              <span className="text-[11px] font-mono text-[#777773]">
+                0{activeRoomIndex + 1} / 0{ROOM_CATEGORIES.length}
+              </span>
+              <div className="w-14 sm:w-16 h-1 rounded-full bg-[#E7E7E3] overflow-hidden">
+                <motion.div
+                  className="h-full bg-[#171715] rounded-full"
+                  initial={false}
+                  animate={{
+                    width: `${((activeRoomIndex + 1) / ROOM_CATEGORIES.length) * 100}%`,
+                  }}
+                  transition={{ duration: 0.4, ease: MOTION_EASE.editorial }}
+                />
+              </div>
+            </div>
+          </div>
+
           {/* Below the Cards: Editorial Heading + Circular Prev/Next Buttons */}
-          <div className="mt-6 sm:mt-7 flex items-start justify-between gap-4">
+          <div className="mt-5 sm:mt-6 flex items-start justify-between gap-4">
             <TextReveal
               lines={["Find Your Perfect", "Stay in Sarajevo."]}
               className="font-editorial text-[28px] sm:text-[36px] lg:text-[40px] font-normal text-[#171715] leading-[1.12] tracking-[-0.03em]"
