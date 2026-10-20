@@ -4,6 +4,9 @@ import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { ContactForm } from "@/components/contact/contact-form";
 import { HOTEL_INFO } from "@/lib/hotel-data";
+import { TextReveal } from "@/components/motion/text-reveal";
+import { RevealOnScroll } from "@/components/motion/reveal-on-scroll";
+import { PageTransition } from "@/components/motion/page-transition";
 
 export const metadata: Metadata = {
   title: "Contact & Directions | Mula Mustafe Bašeskije 2",
@@ -13,21 +16,21 @@ export const metadata: Metadata = {
 
 export default function ContactPage() {
   return (
-    <main className="min-h-screen bg-[#FFFFFF] text-[#171715]">
+    <PageTransition className="min-h-screen bg-[#FFFFFF] text-[#171715]">
       <Navbar variant="page-header" />
 
-      <section className="max-w-[1380px] mx-auto px-5 sm:px-9 lg:px-[52px] pt-10 sm:pt-12 pb-14">
+      <section className="max-w-[1840px] mx-auto px-5 sm:px-8 lg:px-12 xl:px-16 pt-10 sm:pt-12 pb-14">
         {/* Page Heading */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-9 sm:mb-12">
           <div>
             <p className="text-[11px] uppercase tracking-[0.16em] text-[#777773] mb-2">
               24/7 Multilingual Reception &bull; Historic Center
             </p>
-            <h1 className="font-editorial text-[36px] sm:text-[50px] lg:text-[58px] font-normal text-[#171715] leading-[1.06] tracking-[-0.03em]">
-              Get in Touch With
-              <br />
-              Our Sarajevo Team.
-            </h1>
+            <TextReveal
+              lines={["Get in Touch With", "Our Sarajevo Team."]}
+              as="h1"
+              className="font-editorial text-[36px] sm:text-[50px] lg:text-[58px] font-normal text-[#171715] leading-[1.06] tracking-[-0.03em]"
+            />
           </div>
           <p className="text-xs sm:text-[13px] text-[#777773] max-w-[360px] leading-[1.65]">
             Whether you need direct room availability, late-arrival check-in
@@ -39,8 +42,8 @@ export default function ContactPage() {
         {/* Contact Details & Form Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
           {/* Left 5 Columns: Verified Contact Directory */}
-          <div className="lg:col-span-5 space-y-4">
-            <div className="rounded-[24px] bg-[#F7F7F5] border border-[#E7E7E3] p-6 space-y-5">
+          <RevealOnScroll yOffset={18} className="lg:col-span-5 space-y-4">
+            <div className="rounded-[24px] bg-[#F7F7F5] border border-[#E7E7E3] p-6 space-y-5 shadow-[0_4px_20px_rgba(0,0,0,0.02)]">
               <div className="flex items-start gap-3.5">
                 <span className="w-9 h-9 rounded-full bg-white border border-[#E7E7E3] flex items-center justify-center text-[#171715] shrink-0">
                   <MapPin className="w-4 h-4" />
@@ -133,7 +136,7 @@ export default function ContactPage() {
             </div>
 
             {/* Arrival Directions Card */}
-            <div className="rounded-[24px] bg-[#F7F7F5] border border-[#E7E7E3] p-6">
+            <div className="rounded-[24px] bg-[#F7F7F5] border border-[#E7E7E3] p-6 shadow-[0_4px_20px_rgba(0,0,0,0.02)]">
               <div className="flex items-center gap-2 text-xs font-medium text-[#171715] mb-2">
                 <Plane className="w-4 h-4 text-[#5E6B5B]" />
                 <span>Arriving from Sarajevo International Airport (SJJ)</span>
@@ -145,7 +148,7 @@ export default function ContactPage() {
                 transfer directly to Mula Mustafe Bašeskije 2.
               </p>
             </div>
-          </div>
+          </RevealOnScroll>
 
           {/* Right 7 Columns: Functional Guest Inquiry Form */}
           <div className="lg:col-span-7">
@@ -154,37 +157,39 @@ export default function ContactPage() {
         </div>
 
         {/* Embedded Interactive Google Map */}
-        <div className="mt-14 sm:mt-20">
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-5">
-            <div>
-              <p className="text-[11px] uppercase tracking-[0.16em] text-[#777773]">
-                Exact Location &bull; 43.8590512° N, 18.4226918° E
-              </p>
-              <h2 className="font-editorial text-2xl sm:text-3xl font-normal text-[#171715] mt-1">
-                Mula Mustafe Bašeskije 2, Sarajevo
-              </h2>
+        <RevealOnScroll yOffset={24} className="mt-14 sm:mt-20">
+          <div>
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-5">
+              <div>
+                <p className="text-[11px] uppercase tracking-[0.16em] text-[#777773]">
+                  Exact Location &bull; 43.8590512° N, 18.4226918° E
+                </p>
+                <h2 className="font-editorial text-2xl sm:text-3xl font-normal text-[#171715] mt-1">
+                  Mula Mustafe Bašeskije 2, Sarajevo
+                </h2>
+              </div>
+              <span className="text-xs text-[#777773]">
+                5 minutes walk to Baščaršija &amp; Sebilj
+              </span>
             </div>
-            <span className="text-xs text-[#777773]">
-              5 minutes walk to Baščaršija &amp; Sebilj
-            </span>
-          </div>
 
-          <div className="w-full h-[380px] sm:h-[460px] rounded-[24px] overflow-hidden border border-[#E7E7E3] bg-[#F7F7F5]">
-            <iframe
-              title="City Boutique Hotel Sarajevo Location Map"
-              src={HOTEL_INFO.address.googleMapsEmbed}
-              width="100%"
-              height="100%"
-              style={{ border: 0 }}
-              allowFullScreen
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-            />
+            <div className="w-full h-[380px] sm:h-[460px] rounded-[24px] overflow-hidden border border-[#E7E7E3] bg-[#F7F7F5] shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
+              <iframe
+                title="City Boutique Hotel Sarajevo Location Map"
+                src={HOTEL_INFO.address.googleMapsEmbed}
+                width="100%"
+                height="100%"
+                style={{ border: 0 }}
+                allowFullScreen
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+              />
+            </div>
           </div>
-        </div>
+        </RevealOnScroll>
       </section>
 
       <Footer />
-    </main>
+    </PageTransition>
   );
 }

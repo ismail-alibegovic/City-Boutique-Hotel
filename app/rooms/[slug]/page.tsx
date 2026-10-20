@@ -17,6 +17,7 @@ import { Footer } from "@/components/layout/footer";
 import { PillButton } from "@/components/ui/pill-button";
 import { RoomDetailGallery } from "@/components/rooms/room-detail-gallery";
 import { ROOM_CATEGORIES, HOTEL_INFO } from "@/lib/hotel-data";
+import { PageTransition } from "@/components/motion/page-transition";
 
 export function generateStaticParams() {
   return ROOM_CATEGORIES.map((room) => ({
@@ -55,10 +56,10 @@ export default async function RoomDetailPage({
   const relatedRooms = ROOM_CATEGORIES.filter((r) => r.slug !== room.slug);
 
   return (
-    <main className="min-h-screen bg-[#FFFFFF] text-[#171715]">
+    <PageTransition className="min-h-screen bg-[#FFFFFF] text-[#171715]">
       <Navbar variant="page-header" />
 
-      <div className="max-w-[1380px] mx-auto px-5 sm:px-9 lg:px-[52px] pt-8 sm:pt-10 pb-14">
+      <div className="max-w-[1840px] mx-auto px-5 sm:px-8 lg:px-12 xl:px-16 pt-8 sm:pt-10 pb-14">
         {/* Breadcrumb & Back Link */}
         <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
           <Link
@@ -353,6 +354,6 @@ export default async function RoomDetailPage({
       </div>
 
       <Footer />
-    </main>
+    </PageTransition>
   );
 }

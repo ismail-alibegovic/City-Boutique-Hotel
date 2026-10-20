@@ -2,8 +2,9 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { Navbar } from "@/components/layout/navbar";
+import { MOTION_EASE, MOTION_DURATIONS } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 
 const ORBIT_NODES = [
@@ -33,8 +34,11 @@ const ORBIT_NODES = [
   },
 ];
 
+const HEADLINE_LINES = ["Your Stay in", "the Heart of", "Sarajevo."];
+
 export function HeroSection() {
   const [activeNode, setActiveNode] = useState(ORBIT_NODES[0]);
+  const shouldReduceMotion = useReducedMotion();
 
   return (
     <section
@@ -42,18 +46,28 @@ export function HeroSection() {
       className="w-full max-w-[1840px] mx-auto px-3 sm:px-4 pt-3 sm:pt-4"
     >
       <div className="relative w-full min-h-[500px] sm:min-h-[560px] lg:h-[calc(82dvh-16px)] lg:min-h-[560px] lg:max-h-[680px] rounded-[22px] sm:rounded-[26px] overflow-hidden flex flex-col justify-between bg-[#111512] shadow-[0_14px_40px_rgba(17,21,18,0.08)]">
-        {/* Background Atmospheric Hotel Photograph — LCP candidate with fetchPriority="high" */}
-        <div className="absolute inset-0 z-0">
-          <img
+        {/* Step 1: Background Atmospheric Hotel Photograph with subtle cinematic scale settle */}
+        <div className="absolute inset-0 z-0 overflow-hidden">
+          <motion.img
             src="/images/hotel/reception-main.jpg"
             alt="City Boutique Hotel Sarajevo warm interior salon and entrance lounge"
             fetchPriority="high"
             width={1400}
             height={850}
-            className="w-full h-full object-cover object-center scale-[1.01] brightness-[0.82] contrast-[1.04]"
+            initial={shouldReduceMotion ? false : { scale: 1.06, opacity: 0.85 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{
+              duration: MOTION_DURATIONS.heroScale,
+              ease: MOTION_EASE.cinematic,
+            }}
+            className="w-full h-full object-cover object-center brightness-[0.82] contrast-[1.04] will-change-transform"
           />
-          {/* Cinematic dark #111512 multi-stop overlay for crisp editorial typography contrast */}
-          <div
+
+          {/* Step 2: Cinematic dark #111512 multi-stop overlays settling softly */}
+          <motion.div
+            initial={shouldReduceMotion ? false : { opacity: 0.6 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 1.1, ease: MOTION_EASE.fade }}
             className="absolute inset-0"
             style={{
               background:
@@ -69,60 +83,106 @@ export function HeroSection() {
           />
         </div>
 
-        {/* Overlaid Top Navigation */}
-        <Navbar variant="hero-overlay" />
+        {/* Step 3: Overlaid Top Navigation entering with gentle fade and subtle vertical settle */}
+        <motion.div
+          initial={shouldReduceMotion ? false : { opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{
+            duration: 0.7,
+            delay: 0.15,
+            ease: MOTION_EASE.editorial,
+          }}
+          className="relative z-40 w-full"
+        >
+          <Navbar variant="hero-overlay" />
+        </motion.div>
 
         {/* Main Hero Editorial Content Grid */}
         <div className="relative z-10 w-full px-5 sm:px-8 lg:px-10 xl:px-12 pb-6 sm:pb-8 lg:pb-9 pt-6 flex flex-col lg:flex-row lg:items-end justify-between gap-6 lg:gap-8">
-          {/* Bottom-Left: Oversized Lightweight Contemporary Headline matching Dribbble reference */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
-            className="max-w-[640px]"
-          >
+          {/* Step 4: Bottom-Left Masked Line-by-Line Headline Reveal */}
+          <div className="max-w-[640px]">
             <h1 className="font-editorial text-[clamp(2.4rem,1.25rem+3.8vw,4.75rem)] font-light text-white leading-[1.03] tracking-[-0.035em]">
-              Your Stay in
-              <br />
-              the Heart of
-              <br />
-              Sarajevo.
+              {HEADLINE_LINES.map((line, idx) => (
+                <span key={idx} className="block overflow-hidden pb-1 -mb-1">
+                  <motion.span
+                    initial={
+                      shouldReduceMotion
+                        ? false
+                        : { y: "115%", opacity: 0.1 }
+                    }
+                    animate={{ y: "0%", opacity: 1 }}
+                    transition={{
+                      duration: 0.85,
+                      delay: 0.22 + idx * 0.08,
+                      ease: MOTION_EASE.editorial,
+                    }}
+                    className="block will-change-transform"
+                  >
+                    {line}
+                  </motion.span>
+                </span>
+              ))}
             </h1>
-          </motion.div>
+          </div>
 
           {/* Right Column: Supporting Paragraph + Floating Circular Image Composition */}
-          <motion.div
-            initial={{ opacity: 0, y: 18 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
-            className="flex flex-col items-end gap-4 sm:gap-6"
-          >
-            {/* Right-aligned supporting paragraph matching Dribbble reference */}
-            <p className="text-white/90 text-xs sm:text-[13.5px] leading-[1.55] max-w-[290px] text-left sm:text-right font-normal self-start sm:self-end">
+          <div className="flex flex-col items-end gap-4 sm:gap-6">
+            {/* Step 5: Right-aligned supporting paragraph fading in softly */}
+            <motion.p
+              initial={shouldReduceMotion ? false : { opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{
+                duration: 0.7,
+                delay: 0.42,
+                ease: MOTION_EASE.editorial,
+              }}
+              className="text-white/90 text-xs sm:text-[13.5px] leading-[1.55] max-w-[290px] text-left sm:text-right font-normal self-start sm:self-end"
+            >
               Discover authentic Bosnian hospitality, thoughtful comfort, and
               the charm of Sarajevo&apos;s historic center.
-            </p>
+            </motion.p>
 
-            {/* Floating Circular Visual with Mathematically Concentric Orbital Ring & 3 Nodes */}
+            {/* Step 6 & 7: Floating Circular Visual with Concentric Orbital Ring & Animated Nodes */}
             <div className="relative pl-[82px] sm:pl-[96px] pr-1 py-2.5 select-none self-end">
-              {/* Concentric Circle Wrapper */}
               <div className="relative w-[166px] h-[166px] sm:w-[204px] sm:h-[204px] lg:w-[222px] lg:h-[222px]">
-                {/* Outer Concentric Orbital Ring */}
-                <div
+                {/* Outer Concentric Orbital Ring with Subtle Entrance Animation */}
+                <motion.div
+                  initial={
+                    shouldReduceMotion
+                      ? false
+                      : { opacity: 0, scale: 0.88, rotate: -6 }
+                  }
+                  animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                  transition={{
+                    duration: 0.95,
+                    delay: 0.38,
+                    ease: MOTION_EASE.editorial,
+                  }}
                   className="
                     absolute -inset-[13px] sm:-inset-[16px] rounded-full
-                    border border-white/40 pointer-events-none
+                    border border-white/40 pointer-events-none will-change-transform
                   "
                 >
-                  {/* 3 Interactive Nodes Placed on the Exact Circumference of the Orbital Ring */}
-                  {ORBIT_NODES.map((node) => {
+                  {/* 3 Interactive Nodes Placed on the Circumference */}
+                  {ORBIT_NODES.map((node, nodeIdx) => {
                     const isActive = activeNode.id === node.id;
                     return (
-                      <button
+                      <motion.button
                         key={node.id}
                         type="button"
                         onClick={() => setActiveNode(node)}
                         onMouseEnter={() => setActiveNode(node)}
+                        initial={
+                          shouldReduceMotion
+                            ? false
+                            : { opacity: 0, scale: 0.5 }
+                        }
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{
+                          duration: 0.5,
+                          delay: 0.52 + nodeIdx * 0.08,
+                          ease: MOTION_EASE.micro,
+                        }}
                         style={{
                           top: node.topPercent,
                           left: node.leftPercent,
@@ -132,7 +192,7 @@ export function HeroSection() {
                         {/* Label positioned to the left of the dot */}
                         <span
                           className={cn(
-                            "absolute right-full mr-2.5 sm:mr-3 text-[11px] sm:text-xs tracking-[-0.01em] whitespace-nowrap transition-colors",
+                            "absolute right-full mr-2.5 sm:mr-3 text-[11px] sm:text-xs tracking-[-0.01em] whitespace-nowrap transition-colors duration-200",
                             isActive
                               ? "text-white font-medium"
                               : "text-white/80 group-hover:text-white"
@@ -150,29 +210,58 @@ export function HeroSection() {
                               : "ring-2 ring-white/25 opacity-90 group-hover:opacity-100"
                           )}
                         />
-                      </button>
+                      </motion.button>
                     );
                   })}
-                </div>
+                </motion.div>
 
-                {/* Inner Circular Hotel Room Photograph */}
-                <Link
-                  href="/rooms"
-                  aria-label={`Explore ${activeNode.caption}`}
-                  className="group relative w-full h-full rounded-full overflow-hidden border-[6px] border-[#171715]/45 ring-1 ring-white/20 shadow-[0_16px_40px_rgba(0,0,0,0.45)] block bg-[#171715]"
+                {/* Inner Circular Hotel Room Photograph with Subtle Scale-in & Crossfade */}
+                <motion.div
+                  initial={
+                    shouldReduceMotion
+                      ? false
+                      : { opacity: 0, scale: 0.92 }
+                  }
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{
+                    duration: 0.85,
+                    delay: 0.35,
+                    ease: MOTION_EASE.editorial,
+                  }}
+                  className="w-full h-full"
                 >
-                  <img
-                    src={activeNode.previewImage}
-                    alt={activeNode.caption}
-                    width={240}
-                    height={240}
-                    className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-108"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/25 via-transparent to-transparent opacity-50 group-hover:opacity-20 transition-opacity" />
-                </Link>
+                  <Link
+                    href="/rooms"
+                    aria-label={`Explore ${activeNode.caption}`}
+                    className="group relative w-full h-full rounded-full overflow-hidden border-[6px] border-[#171715]/45 ring-1 ring-white/20 shadow-[0_16px_40px_rgba(0,0,0,0.45)] block bg-[#171715]"
+                  >
+                    <AnimatePresence mode="wait">
+                      <motion.img
+                        key={activeNode.id}
+                        src={activeNode.previewImage}
+                        alt={activeNode.caption}
+                        width={240}
+                        height={240}
+                        initial={
+                          shouldReduceMotion
+                            ? false
+                            : { opacity: 0.65, scale: 1.05 }
+                        }
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0.7 }}
+                        transition={{
+                          duration: 0.45,
+                          ease: MOTION_EASE.fade,
+                        }}
+                        className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-108"
+                      />
+                    </AnimatePresence>
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/25 via-transparent to-transparent opacity-50 group-hover:opacity-20 transition-opacity duration-300 pointer-events-none" />
+                  </Link>
+                </motion.div>
               </div>
             </div>
-          </motion.div>
+          </div>
         </div>
       </div>
     </section>

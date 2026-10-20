@@ -1,5 +1,11 @@
+"use client";
+
 import Link from "next/link";
+import { ArrowUpRight } from "lucide-react";
 import { FACILITIES_DATA } from "@/lib/hotel-data";
+import { TextReveal } from "@/components/motion/text-reveal";
+import { RevealOnScroll } from "@/components/motion/reveal-on-scroll";
+import { StaggeredReveal, StaggerItem } from "@/components/motion/staggered-reveal";
 import { cn } from "@/lib/utils";
 
 export function FacilitiesSection() {
@@ -12,34 +18,34 @@ export function FacilitiesSection() {
         {/* Top Editorial Header Row matching Dribbble screenshot */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-10 items-center mb-8 sm:mb-10">
           <div className="lg:col-span-5 order-2 lg:order-1">
-            <p className="text-xs text-[#777773] leading-[1.6] max-w-[300px]">
-              Every detail at City Boutique Hotel is thoughtfully curated to
-              make your stay in Sarajevo&apos;s historic center effortless and
-              memorable.
-            </p>
+            <RevealOnScroll delay={0.1} yOffset={14}>
+              <p className="text-xs text-[#777773] leading-[1.6] max-w-[300px]">
+                Every detail at City Boutique Hotel is thoughtfully curated to
+                make your stay in Sarajevo&apos;s historic center effortless and
+                memorable.
+              </p>
+            </RevealOnScroll>
           </div>
           <div className="lg:col-span-7 order-1 lg:order-2 lg:flex lg:justify-end">
-            <h2
-              id="facilities-heading"
+            <TextReveal
+              lines={["Thoughtful Comfort.", "Exceptional Hospitality."]}
               className="font-editorial text-[28px] sm:text-[36px] lg:text-[42px] font-normal text-[#171715] leading-[1.12] tracking-[-0.03em] lg:w-full lg:max-w-[470px]"
-            >
-              Thoughtful Comfort.
-              <br />
-              Exceptional Hospitality.
-            </h2>
+            />
           </div>
         </div>
 
         {/* Staggered 5-Card Vertical Composition matching Dribbble reference */}
-        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-11 gap-3 sm:gap-4 items-start">
+        <StaggeredReveal
+          stagger={0.08}
+          className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-11 gap-3 sm:gap-4 items-start"
+        >
           {FACILITIES_DATA.map((facility, idx) => {
             const isCenterpiece = idx === 2;
             return (
-              <Link
+              <StaggerItem
                 key={facility.id}
-                href={`/facilities#${facility.id}`}
+                yOffset={20 + idx * 4}
                 className={cn(
-                  "group relative rounded-[20px] sm:rounded-[22px] overflow-hidden bg-[#171715] block transition-all duration-500 ease-out hover:-translate-y-1.5 focus:outline-none focus:ring-2 focus:ring-[#171715]",
                   isCenterpiece
                     ? "col-span-2 lg:col-span-3"
                     : "col-span-1 lg:col-span-2",
@@ -47,47 +53,56 @@ export function FacilitiesSection() {
                   facility.offsetClass
                 )}
               >
-                <img
-                  src={facility.image}
-                  alt={`${facility.title} at City Boutique Hotel Sarajevo`}
-                  width={400}
-                  height={500}
-                  className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105 brightness-[0.9]"
-                />
-                {/* Cinematic dark gradient overlay */}
-                <div
-                  className="absolute inset-0 transition-opacity duration-300"
-                  style={{
-                    background:
-                      "linear-gradient(180deg, rgba(17,21,18,0.08) 0%, rgba(17,21,18,0.16) 55%, rgba(17,21,18,0.8) 100%)",
-                  }}
-                />
+                <Link
+                  href={`/facilities#${facility.id}`}
+                  className="group relative w-full h-full rounded-[20px] sm:rounded-[22px] overflow-hidden bg-[#171715] block transition-all duration-500 ease-out hover:-translate-y-1.5 focus:outline-none focus:ring-2 focus:ring-[#171715] shadow-[0_6px_24px_rgba(0,0,0,0.04)]"
+                >
+                  <img
+                    src={facility.image}
+                    alt={`${facility.title} at City Boutique Hotel Sarajevo`}
+                    width={400}
+                    height={500}
+                    loading="lazy"
+                    className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-106 brightness-[0.9]"
+                  />
+                  {/* Cinematic dark gradient overlay */}
+                  <div
+                    className="absolute inset-0 transition-opacity duration-500 group-hover:opacity-90"
+                    style={{
+                      background:
+                        "linear-gradient(180deg, rgba(17,21,18,0.08) 0%, rgba(17,21,18,0.16) 55%, rgba(17,21,18,0.82) 100%)",
+                    }}
+                  />
 
-                {/* Subtle top category pill on hover */}
-                <span className="absolute top-3 left-1/2 -translate-x-1/2 px-2.5 py-0.5 rounded-full bg-black/30 backdrop-blur-md border border-white/20 text-[10px] text-white/90 opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
-                  {facility.hours}
-                </span>
+                  {/* Top category pill that fades in on hover (or stays visible on touch) */}
+                  <div className="absolute top-3 left-1/2 -translate-x-1/2 flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-black/40 backdrop-blur-md border border-white/20 text-[10px] text-white/90 opacity-0 group-hover:opacity-100 transition-all duration-300 transform -translate-y-1 group-hover:translate-y-0 whitespace-nowrap">
+                    <span>{facility.hours}</span>
+                    <ArrowUpRight className="w-2.5 h-2.5 text-white/70" />
+                  </div>
 
-                {/* Bottom Centered Label matching Dribbble screenshot */}
-                <div className="absolute bottom-4 left-3 right-3 text-center">
-                  <h3 className="text-sm sm:text-[16px] lg:text-[17px] font-normal text-white tracking-[-0.015em]">
-                    {facility.shortLabel}
-                  </h3>
-                </div>
-              </Link>
+                  {/* Bottom Centered Label matching Dribbble screenshot with smooth upward glide on hover */}
+                  <div className="absolute bottom-4 left-3 right-3 text-center transition-transform duration-300 group-hover:-translate-y-0.5">
+                    <h3 className="text-sm sm:text-[16px] lg:text-[17px] font-normal text-white tracking-[-0.015em]">
+                      {facility.shortLabel}
+                    </h3>
+                  </div>
+                </Link>
+              </StaggerItem>
             );
           })}
-        </div>
+        </StaggeredReveal>
 
-        {/* Centered Minimalist "Explore Facilities" Pill CTA */}
-        <div className="mt-7 sm:mt-8 flex justify-center">
-          <Link
-            href="/facilities"
-            className="px-6 py-1.5 rounded-full border border-[#171715]/30 bg-white text-xs font-medium text-[#171715] hover:border-[#171715] hover:bg-[#171715] hover:text-white transition-all duration-300"
-          >
-            Explore Facilities
-          </Link>
-        </div>
+        {/* Centered Minimalist "Explore Facilities" Pill CTA with Microinteraction */}
+        <RevealOnScroll delay={0.2} yOffset={14}>
+          <div className="mt-7 sm:mt-8 flex justify-center">
+            <Link
+              href="/facilities"
+              className="px-6 py-2 rounded-full border border-[#171715]/30 bg-white text-xs font-medium text-[#171715] hover:border-[#171715] hover:bg-[#171715] hover:text-white hover:scale-105 active:scale-95 transition-all duration-300"
+            >
+              Explore Facilities
+            </Link>
+          </div>
+        </RevealOnScroll>
       </div>
     </section>
   );
