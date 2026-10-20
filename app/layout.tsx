@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { HOTEL_INFO } from "@/lib/hotel-data";
 import { ScrollProgress } from "@/components/motion";
+import { SitePreloader } from "@/components/ui/site-preloader";
 
 export const metadata: Metadata = {
   title: {
@@ -85,6 +86,7 @@ export default function RootLayout({
         className="min-h-full flex flex-col bg-[#FFFFFF] text-[#171715]"
         suppressHydrationWarning
       >
+        <SitePreloader />
         <ScrollProgress />
         <script
           type="application/ld+json"
